@@ -1,5 +1,6 @@
 import sc2
 from sc2.unit import Unit
+from sc2.constants import DRONE
 
 from .macro import MacroManager
 from .micro import MicroManager
@@ -28,6 +29,8 @@ class BerberBot(sc2.BotAI):
             await self.chat_send(f"All {len(self.expansion_locations)} expansions belong to me!")
 
     async def on_unit_created(self, unit: Unit):
+        if unit.type_id == DRONE and unit.is_returning:
+            return # Just came out from extractor
         await self.macro.on_unit_created(unit)
         await self.micro.on_unit_created(unit)
 
