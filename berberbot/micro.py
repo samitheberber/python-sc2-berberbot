@@ -14,6 +14,5 @@ class MicroManager(Manager):
     async def attack_group_actions(self, iteration):
         actions = []
         for group in self.macro.attack_groups:
-            logger.info(f"group actions")
             actions += group.actions(iteration)
         return actions

@@ -76,7 +76,6 @@ class MacroManager(Manager):
                 if self.botai.can_afford(target):
                     larva = self.safe_larva
                     if larva:
-                        logger.info(f"Train drone")
                         return larva.train(target)
             else:
                 need_supply = True
