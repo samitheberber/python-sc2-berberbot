@@ -1,11 +1,12 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from sc2.constants import DRONE
+from sc2.constants import DRONE, LARVA, OVERLORD
 from sc2.unit import Unit
 
 from .manager import Manager
 from .groups import AttackGroup
+from .bo import BOType
 
 class MacroManager(Manager):
 
@@ -23,6 +24,9 @@ class MacroManager(Manager):
 
         await self.update_attack_groups(iteration)
         actions = []
+        spending = await self.spend_resources()
+        if spending:
+            actions.append(spending)
         return actions
 
     async def on_unit_created(self, unit: Unit):
@@ -63,3 +67,29 @@ class MacroManager(Manager):
                     logger.warning(f"Naive group to go!")
                     fresh_group = AttackGroup(self.botai, my_units, enemies, iteration)
                     self.attack_groups.append(fresh_group)
+
+    async def spend_resources(self):
+        need_supply = False
+        producer, target = self.bo.next
+        if producer == BOType.FROM_LARVA:
+            if self.botai.can_feed(target):
+                if self.botai.can_afford(target):
+                    larva = self.safe_larva
+                    if larva:
+                        logger.info(f"Train drone")
+                        return larva.train(target)
+            else:
+                need_supply = True
+        if need_supply and self.botai.can_afford(OVERLORD) and not self.botai.already_pending(OVERLORD):
+            larva = self.safe_larva
+            if larva:
+                logger.info(f"Train overlord")
+                return larva.train(OVERLORD)
+        return None
+
+    @property
+    def safe_larva(self):
+        larvae = self.botai.units(LARVA)
+        if larvae.exists:
+            return larvae.closest_to(self.botai.townhalls.first)
+        return None

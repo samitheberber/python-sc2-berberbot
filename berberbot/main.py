@@ -3,12 +3,14 @@ from sc2.unit import Unit
 
 from .macro import MacroManager
 from .micro import MicroManager
+from .bo import BuildOrder
 
 class BerberBot(sc2.BotAI):
 
     def on_start(self):
         self.macro = MacroManager(self)
         self.micro = MicroManager(self)
+        self.bo = BuildOrder(self)
 
     def on_end(self, game_result):
         pass

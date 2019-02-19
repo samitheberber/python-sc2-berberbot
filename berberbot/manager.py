@@ -7,7 +7,7 @@ class Manager:
         self.init()
 
     def init(self):
-        raise NotImplementedError
+        pass
 
     async def on_step(self, iteration):
         return []
@@ -31,3 +31,11 @@ class Manager:
     @property
     def micro(self):
         return self.botai.micro
+
+    @property
+    def bo(self):
+        return self.botai.bo
+
+    @property
+    def state(self):
+        return self.botai.state
